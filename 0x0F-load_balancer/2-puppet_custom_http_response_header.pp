@@ -1,21 +1,8 @@
-# configures an ubuntu server using puppet as follows:
-#	- apt-get update
-#	- apt-get install nginx
-#	- set X-Served-By -> $HOSTNAME
-#	- service restart
-exec { '/usr/bin/env apt-get -y update' : }
--> package { 'nginx' :
-  ensure => installed,
-}
--> file { '/var/www/html/index.html' :
-  content => 'Holberton School!',
-}
--> file_line { 'add header':
-  ensure => present,
-  path   => '/etc/nginx/sites-available/default',
-  line   => "\tadd_header X-Served-By ${hostname};",
-  after  => 'server_name _;',
-}
--> service { 'nginx':
-  ensure => running,
+# Automation: creates a custom HTTP header response with Puppet.
+exec { 'command':
+  command  => 'apt-get -y update;
+  apt-get -y install nginx;
+  sudo sed -i "/listen 80 default_server;/a add_header X-Served-By $HOSTNAME;" /etc/nginx/sites-available/default;
+  service nginx restart',
+  provider => shell,
 }
